@@ -24,12 +24,12 @@ If credentials need to be rotated mid-review, email `privacy@discovr.es` and we'
 ## Authentication flow
 
 1. Add the connector via the Claude / ChatGPT catalogue, or paste the MCP URL directly.
-2. The client opens an OAuth window pointing at `https://mcp.discovr.es/oauth/authorize` (or `sonas.work`).
-3. The page redirects to Google for sign-in (we use Firebase Auth — Google as the upstream IdP).
+2. The client opens an OAuth window pointing at `https://mcp.discovr.es/authorize` (or `https://mcp.sonas.work/authorize`), which forwards to the brand's sign-in page at `/login`.
+3. Sign in with **email + password** (use the test credentials from the submission) or with Google. Both are backed by Firebase Auth.
 4. After consent, control returns to the MCP client with an opaque token.
 5. The client makes its first MCP call. The token is validated against our DB and a `User` row is attached to the request context for the lifetime of that call.
 
-A successful first call should be the `help` tool — it requires no auth state and confirms transport + token plumbing in one step.
+A successful first call should be the `help` tool — it has no role requirement and no side effects, so it confirms transport + token plumbing in one step.
 
 ## Tool inventory
 
@@ -37,7 +37,7 @@ All tools surface a `title` plus `readOnlyHint` / `destructiveHint` annotations.
 
 | Tool             | Audience   | Title                       | Read-only | Destructive | Notes                                                       |
 |------------------|------------|-----------------------------|-----------|-------------|-------------------------------------------------------------|
-| `help`           | any        | Help                        | ✅        | ❌          | Static text. No auth required.                              |
+| `help`           | any        | Help                        | ✅        | ❌          | Static text. Any signed-in user, no role required.          |
 | `get_candidate`  | recruiter  | Get candidate               | ✅        | ❌          | Returns 404 if `published_at` is null or username unknown.  |
 | `chat`           | recruiter  | Chat with candidate AI      | ❌        | ❌          | Persists messages + bills the recruiter; not destructive.   |
 | `get_my_profile` | candidate  | View my profile             | ✅        | ❌          | Includes completeness score and missing-fields list.        |
@@ -62,7 +62,7 @@ A reviewer can cover the full surface in ~10 minutes:
 ## Known limits
 
 - **Free-tier caps**: recruiters get 5 candidates / 3 messages each. The reviewer account is provisioned past those caps so the cap UI doesn't fire during review.
-- **Chat latency**: 3-8 seconds per turn (Claude Sonnet). Streamable HTTP carries partial output so the client can show progress.
+- **Chat latency**: 3-8 seconds per turn (Claude Sonnet). The reply is returned in a single tool result once generation finishes.
 - **Embeddings**: profile text is embedded via OpenAI `text-embedding-3-small`. New profiles take 5-15 seconds before they're searchable.
 - **Data residency**: app DB on Hostinger (EU). Anthropic + OpenAI + Stripe + Sentry are US sub-processors under EU SCCs. Detail at the [privacy policy](https://discovr.es/privacy).
 
