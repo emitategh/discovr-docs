@@ -4,7 +4,7 @@ This repository hosts the public-facing documentation for the [Discovr](https://
 
 ## What this service is
 
-AI-powered candidate profiles for foreign professionals in Spain and Europe. Candidates build an AI persona from their CV and a guided interview; recruiters discover and chat with that persona from any MCP-compatible client. Same backend, two brand fronts:
+AI-powered candidate profiles that recruiters can chat with. Candidates build an AI persona from their CV and a guided interview; recruiters discover and chat with that persona from any MCP-compatible client. Same backend, two brand fronts:
 
 | Brand   | Web                     | MCP server                      | MCP Registry                              |
 |---------|-------------------------|---------------------------------|-------------------------------------------|
